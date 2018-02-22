@@ -1,0 +1,14 @@
+<%= $acme_script %> \
+--issue \
+<% if $staging { -%>
+--staging \
+--server <%= $staging_url %> \
+<% } else { -%>
+--server <%= $prod_url %>
+<% } -%>
+--dns dns_lexicon \
+--dnssleep 600 \
+<% $domains.each |$d| { -%>
+--domain "<%= $d %>" \
+<% } -%>
+
