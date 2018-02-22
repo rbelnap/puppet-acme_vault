@@ -1,5 +1,0 @@
-export VAULT_TOKEN=<%= @vault_token %>
-export VAULT_ADDR=<%= @vault_addr %>
-export LEXICON_PROVIDER=namecheap
-export LEXICON_NAMECHEAP_USERNAME=<%= @dns_api_username %>
-export LEXICON_NAMECHEAP_TOKEN=$(<%= @vault_bin %> read -field=value /secret/dns_api/token)

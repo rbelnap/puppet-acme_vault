@@ -11,57 +11,28 @@ class acme_vault::requestor (
     $acme_revision      = $::acme_vault::params::acme_revision,
     $acme_repo_path     = $::acme_vault::params::acme_repo_path,
     $acme_script        = $::acme_vault::params::acme_script,
-    $dns_api_username   = $::acme_vault::params::dns_api_username,
+
+    $lexicon_provider   = $::acme_vault::params::lexicon_provider,
+    $lexicon_username   = $::acme_vault::params::lexicon_username,
+    $lexicon_token      = $::acme_vault::params::lexicon_token,
 
     $domains            = $::acme_vault::params::domains,
-    $vault_token        = $::acme_vault::params::vault_token,
-    $vault_addr         = $::acme_vault::params::vault_addr,
-    $vault_bin          = $::acme_vault::params::vault_bin,
 
 ) inherits acme_vault::params {
 
-  #  include acme_vault::user
-    # create acme_vault user
-    user { $user:
-      ensure     => present,
-      gid        => $group,
-      system     => true,
-      home       => $home_dir,
-      managehome => true,
-    }
+    include acme_vault::common
 
-    file { $home_dir:
-      ensure => directory,
-      owner  => $user,
-      group  => $group,
-      mode   => "0750",
-    }
-
-    # copy vault binary? install via module?
-    #TODO put in init
-    # vault module isn't too flexible for install only, just copy in binary
-
-    #include ::vault::install
-    #class { '::vault::install':
-    #  manage_user => false,
-    #}
-  
-    file { $vault_bin:
-        ensure => present,
-        owner  => "root",
-        group  => "root",
-        mode   => "0555",
-        source => "puppet:///modules/acme_vault/vault",
-    }
-
+    $requestor_bashrc_template = @(END)
+export LEXICON_PROVIDER=<%= @lexicon_provider %>
+export LEXICON_<%= @lexicon_provider.upcase %>_USERNAME=<%= @lexicon_username %>
+export LEXICON_<%= @lexicon_provider.upcase %>_TOKEN=<%= @lexicon_token %>
+END
     # variables in bashrc
 
-		file { "$home_dir/.bashrc":
-			ensure  => present,
-			owner   => $user,
-      group   => $group,
-      mode    => "0600",
-      content => template("acme_vault/bashrc"),
+		concat::fragment { "requestor_bashrc":
+      target  => "${home_dir}/.bashrc",
+      content => inline_template($requestor_bashrc_template),
+      order   => "02",
     }
 
 
@@ -73,9 +44,7 @@ class acme_vault::requestor (
       revision => $acme_revision,
     }
 
-    notice("$domains")
-    # copy down issue scripts
-
+    # create issue scripts
     $domains.each |$domain, $d_list| {
       file {"/${home_dir}/${domain}.sh":
         ensure => present,
@@ -90,12 +59,9 @@ class acme_vault::requestor (
           staging     => $staging,
           staging_url => $staging_url,
           prod_url    => $prod_url,
-          } )
+          } 
+        )
       }
     }
 
-
 }
-
-
-
