@@ -1,3 +1,6 @@
+#!/bin/bash
+. ${HOME}/.bashrc
+
 <%= $acme_script %> \
 --issue \
 <% if $staging { -%>

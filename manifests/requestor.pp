@@ -23,6 +23,7 @@ class acme_vault::requestor (
     include acme_vault::common
 
     $requestor_bashrc_template = @(END)
+export PATH=$HOME:$PATH
 export TLDEXTRACT_CACHE=$HOME/.tld_set
 export PROVIDER=<%= @lexicon_provider %>
 export LEXICON_<%= @lexicon_provider.upcase %>_USERNAME=<%= @lexicon_username %>
@@ -70,9 +71,10 @@ END
         )
       }
       cron { "${domain}_issue":
-        command => "${home_dir}/${domain}.sh",
-        user    => $user,
-        weekday => 1,
+        command     => "${home_dir}/${domain}.sh",
+        user        => $user,
+        weekday     => 1,
+        environment => "MAILTO=${contact_email}",
       }
     }
 
