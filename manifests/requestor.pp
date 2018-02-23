@@ -23,12 +23,19 @@ class acme_vault::requestor (
     include acme_vault::common
 
     $requestor_bashrc_template = @(END)
-export LEXICON_PROVIDER=<%= @lexicon_provider %>
+export TLDEXTRACT_CACHE=$HOME/.tld_set
+export PROVIDER=<%= @lexicon_provider %>
 export LEXICON_<%= @lexicon_provider.upcase %>_USERNAME=<%= @lexicon_username %>
 export LEXICON_<%= @lexicon_provider.upcase %>_TOKEN=<%= @lexicon_token %>
 END
-    # variables in bashrc
 
+    # install lexicon
+    ensure_packages(['dns-lexicon', 'PyNamecheap'], {
+      ensure   => present,
+      provider => 'pip',
+    })
+
+    # variables in bashrc
 		concat::fragment { "requestor_bashrc":
       target  => "${home_dir}/.bashrc",
       content => inline_template($requestor_bashrc_template),
@@ -61,6 +68,11 @@ END
           prod_url    => $prod_url,
           } 
         )
+      }
+      cron { "${domain}_issue":
+        command => "${home_dir}/${domain}.sh",
+        user    => $user,
+        weekday => 1,
       }
     }
 

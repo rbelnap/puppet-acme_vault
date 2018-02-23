@@ -13,6 +13,7 @@ class acme_vault::params {
     $acme_revision = 'HEAD'
     $acme_repo_path = "$home_dir/acme.sh"
     $acme_script    = "$acme_repo_path/acme.sh"
+    $vault_prefix   = '/secret/letsencrypt/'
     # domains list TODO should be a mapping name -> domains
 
     $domains     = ''

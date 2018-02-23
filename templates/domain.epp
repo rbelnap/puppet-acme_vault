@@ -11,4 +11,8 @@
 <% $domains.each |$d| { -%>
 --domain "<%= $d %>" \
 <% } -%>
-
+ > /dev/null && \
+<%= $acme_script %> \
+--deploy \
+--domain <%= $domain %> \
+--deploy-hook vault_cli

@@ -6,6 +6,7 @@ class acme_vault::common (
     $vault_token        = $::acme_vault::params::vault_token,
     $vault_addr         = $::acme_vault::params::vault_addr,
     $vault_bin          = $::acme_vault::params::vault_bin,
+    $vault_prefix       = $::acme_vault::params::vault_prefix,
 
 ) inherits acme_vault::params {
 
@@ -13,6 +14,7 @@ class acme_vault::common (
 export VAULT_BIN=<%= @vault_bin %>
 export VAULT_TOKEN=<%= @vault_token %>
 export VAULT_ADDR=<%= @vault_addr %>
+export VAULT_PREFIX=<%= @vault_prefix %>
 END
     # create acme_vault user
     user { $user:
