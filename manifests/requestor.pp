@@ -37,10 +37,10 @@ END
     })
 
     # variables in bashrc
-		concat::fragment { "requestor_bashrc":
+    concat::fragment { 'requestor_bashrc':
       target  => "${home_dir}/.bashrc",
       content => inline_template($requestor_bashrc_template),
-      order   => "02",
+      order   => '02',
     }
 
 
@@ -48,32 +48,32 @@ END
     vcsrepo { $acme_repo_path:
       ensure   => present,
       provider => git,
-      source   => "https://github.com/Neilpang/acme.sh.git",
+      source   => 'https://github.com/Neilpang/acme.sh.git',
       revision => $acme_revision,
     }
 
     # create issue scripts
     $domains.each |$domain, $d_list| {
       file {"/${home_dir}/${domain}.sh":
-        ensure => present,
-        mode   => "0700",
-        owner  => $user,
-        group  => $group,
+        ensure  => present,
+        mode    => '0700',
+        owner   => $user,
+        group   => $group,
 
-        content       => epp("acme_vault/domain.epp", {
-          acme_script => "$acme_script",
+        content => epp('acme_vault/domain.epp', {
+          acme_script => $acme_script,
           domain      => $domain,
           domains     => $d_list,
           staging     => $staging,
           staging_url => $staging_url,
           prod_url    => $prod_url,
-          } 
+          }
         )
       }
       cron { "${domain}_issue":
-        command     => "${home_dir}/${domain}.sh",
-        user        => $user,
-        weekday     => 1,
+        command => "${home_dir}/${domain}.sh",
+        user    => $user,
+        weekday => 1,
       }
     }
 

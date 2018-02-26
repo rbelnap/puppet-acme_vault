@@ -30,7 +30,7 @@ END
       ensure => directory,
       owner  => $user,
       group  => $group,
-      mode   => "0750",
+      mode   => '0750',
     }
 
     # vault module isn't too flexible for install only, just copy in binary
@@ -38,31 +38,31 @@ END
     #class { '::vault::install':
     #  manage_user => false,
     #}
-  
+
     file { $vault_bin:
         ensure => present,
-        owner  => "root",
-        group  => "root",
-        mode   => "0555",
-        source => "puppet:///modules/acme_vault/vault",
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0555',
+        source => 'puppet:///modules/acme_vault/vault',
     }
 
     # variables in bashrc
     concat { "${home_dir}/.bashrc":
-			owner   => $user,
-      group   => $group,
-      mode    => "0600",
+      owner => $user,
+      group => $group,
+      mode  => '0600',
     }
 
-    concat::fragment{ "vault_bashrc":
+    concat::fragment{ 'vault_bashrc':
       target  => "${home_dir}/.bashrc",
       content => inline_template($common_bashrc_template),
-      order   => "01",
+      order   => '01',
     }
 
     # common dummy cron job to set MAILTO
-    cron { "dummy_mailto":
-      command     => "/bin/true",
+    cron { 'dummy_mailto':
+      command     => '/bin/true',
       user        => $user,
       month       => 7,
       environment => "MAILTO=${contact_email}",

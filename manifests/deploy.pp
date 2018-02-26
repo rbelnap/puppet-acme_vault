@@ -16,23 +16,23 @@ class acme_vault::deploy(
     ensure => present,
     owner  => $user,
     group  => $group,
-    mode   => "0750",
-    source => "puppet:///modules/acme_vault/check_cert.sh",
+    mode   => '0750',
+    source => 'puppet:///modules/acme_vault/check_cert.sh',
   }
 
   if $restart {
-    $cron_command = "${home_dir}/check_cert.sh $domain $cert_destination_path && $restart_command"
+    $cron_command = "${home_dir}/check_cert.sh ${domain} ${cert_destination_path} && ${restart_command}"
   } else {
-    $cron_command = "${home_dir}/check_cert.sh $domain $cert_destination_path"
+    $cron_command = "${home_dir}/check_cert.sh ${domain} ${cert_destination_path}"
   }
 
 
   notice($user)
   $domains.each |$domain| {
     cron { "${domain}_deploy":
-      command     => $cron_command,
-      user        => $user,
-      weekday     => 2,
+      command => $cron_command,
+      user    => $user,
+      weekday => 2,
     }
   }
 

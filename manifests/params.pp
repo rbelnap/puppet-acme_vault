@@ -12,15 +12,15 @@ class acme_vault::params {
     $contact_email = ''
 
     $acme_revision = 'HEAD'
-    $acme_repo_path = "$home_dir/acme.sh"
-    $acme_script    = "$acme_repo_path/acme.sh"
+    $acme_repo_path = "${home_dir}/acme.sh"
+    $acme_script    = "${acme_repo_path}/acme.sh"
     $vault_prefix   = '/secret/letsencrypt/'
     $domains     = ''
 
     # authentication
     $vault_token = ''
     $vault_addr  = ''
-    $vault_bin   = "$home_dir/vault"
+    $vault_bin   = "${home_dir}/vault"
 
     # lexicon 
     $lexicon_provider   = ''
@@ -32,6 +32,6 @@ class acme_vault::params {
     $cert_destination_path = '/etc/acme/'
 
     $restart         = false
-    $restart_command = "echo restart!"
+    $restart_command = 'echo restart!'
 
 }
