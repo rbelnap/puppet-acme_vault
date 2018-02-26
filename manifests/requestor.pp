@@ -74,7 +74,6 @@ END
         command     => "${home_dir}/${domain}.sh",
         user        => $user,
         weekday     => 1,
-        environment => "MAILTO=${contact_email}",
       }
     }
 

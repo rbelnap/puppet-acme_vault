@@ -8,14 +8,13 @@ class acme_vault::params {
     $staging     = true
     $staging_url = 'https://acme-staging-v02.api.letsencrypt.org/directory'
     $prod_url    = 'https://acme-v02.api.letsencrypt.org/directory'
+    #TODO configurue email
     $contact_email = ''
 
     $acme_revision = 'HEAD'
     $acme_repo_path = "$home_dir/acme.sh"
     $acme_script    = "$acme_repo_path/acme.sh"
     $vault_prefix   = '/secret/letsencrypt/'
-    # domains list TODO should be a mapping name -> domains
-
     $domains     = ''
 
     # authentication
@@ -31,5 +30,8 @@ class acme_vault::params {
     # settings for deploy
 
     $cert_destination_path = '/etc/acme/'
+
+    $restart         = false
+    $restart_command = "echo restart!"
 
 }

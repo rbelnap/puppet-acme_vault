@@ -2,6 +2,7 @@ class acme_vault::common (
     $user               = $::acme_vault::params::user,
     $group              = $::acme_vault::params::group,
     $home_dir           = $::acme_vault::params::home_dir,
+    $contact_email      = $::acme_vault::params::contact_email,
 
     $vault_token        = $::acme_vault::params::vault_token,
     $vault_addr         = $::acme_vault::params::vault_addr,
@@ -57,6 +58,14 @@ END
       target  => "${home_dir}/.bashrc",
       content => inline_template($common_bashrc_template),
       order   => "01",
+    }
+
+    # common dummy cron job to set MAILTO
+    cron { "dummy_mailto":
+      command     => "/bin/true",
+      user        => $user,
+      month       => 7,
+      environment => "MAILTO=${contact_email}",
     }
 
     #		file { "$home_dir/.bashrc":
