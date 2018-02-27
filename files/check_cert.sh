@@ -12,6 +12,19 @@ get_enddate() {
     date --date="$(openssl x509 -noout -enddate -in <(echo "$1")| awk -F= '{print $2}')" --iso-8601
 }
 
+deploy_cert() {
+    NEWCERT=$1
+    NEWKEY=$2
+    EXISTING_CERT_PATH=$3
+    EXISTING_KEY_PATH=$4
+    
+    echo "deploying cert to $EXISTING_CERT_PATH"
+    #mkdir $EXISTING_CERT_DIR || true  #TODO MOVE
+    echo "$NEWCERT" > $EXISTING_CERT_PATH
+    echo "$NEWKEY"  > $EXISTING_KEY_PATH
+
+}
+
 # arguments
 DOMAIN=$1
 CERT_PREFIX=$2
@@ -43,10 +56,23 @@ fi
 #echo "new fingerprint: $NEWCERT_FINGERPRINT"
 #echo "new enddate: $NEWCERT_ENDDATE"
 
-# Get existing cert info
-EXISTING_CERT=$(cat $EXISTING_CERT_PATH)
-EXISTING_CERT_FINGERPRINT=$(get_fingerprint "$EXISTING_CERT")
-EXISTING_CERT_ENDDATE=$(get_enddate "$EXISTING_CERT")
+# Get existing cert info if it exists.  if it doesn't exist, we don't need to
+# check it, we can just deploy.
+
+if [ -e $EXISTING_CERT_PATH ]
+then 
+    EXISTING_CERT=$(cat $EXISTING_CERT_PATH)
+    EXISTING_CERT_FINGERPRINT=$(get_fingerprint "$EXISTING_CERT")
+    EXISTING_CERT_ENDDATE=$(get_enddate "$EXISTING_CERT")
+else
+    # create destination dir if needed
+    if [ ! -d $EXISTING_CERT_DIR ]
+    then 
+        mkdir -p $EXISTING_CERT_DIR
+    fi
+    deploy_cert "$NEWCERT" "$NEWKEY" "$EXISTING_CERT_PATH" "$EXISTING_KEY_PATH"
+    exit 0
+fi
 
 #echo "existing fingerprint: $EXISTING_CERT_FINGERPRINT"
 #echo "existing enddate: $EXISTING_CERT_ENDDATE"
@@ -74,10 +100,9 @@ then
 fi
 
 # if we made it this far, the cert looks good, replace it
-echo "replacing cert at $EXISTING_CERT_PATH"
-mkdir $EXISTING_CERT_DIR || true
-echo "$NEWCERT" > $EXISTING_CERT_PATH
-echo "$NEWKEY"  > $EXISTING_KEY_PATH
+
+deploy_cert "$NEWCERT" "$NEWKEY" "$EXISTING_CERT_PATH" "$EXISTING_KEY_PATH"
+
 
 
 #openssl x509 -in <(vault read -field=value /secret/apidb.org/cert.pem) -noout -checkend 8640000
