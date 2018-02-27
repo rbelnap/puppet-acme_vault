@@ -35,11 +35,19 @@ class acme_vault::deploy(
     $restart_suffix = ""
   }
 
+  # go through each domain, setup cron, and ensure the destination dir exists
   $domains.each |$domain, $d_list| {
     cron { "${domain}_deploy":
       command => "${home_dir}/check_cert.sh ${domain} ${cert_destination_path} ${restart_suffix}",
       user    => $user,
       weekday => 2,
+    }
+
+    file {"${cert_destination_path}/${domain}":
+      ensure => directory,
+      owner  => $user,
+      group  => $group,
+      mode   => '0750',
     }
   }
 
