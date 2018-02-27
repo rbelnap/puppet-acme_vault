@@ -1,3 +1,9 @@
+# Common configuration for acme_vault
+# 
+# This class needs to be included before acme_vault::requestor or
+# acme_vault::deploy and contains configurations common to both.  The user,
+# vault, vault vars, and cron mailto are needed for both requestor and deploy
+
 class acme_vault::common (
     $user               = $::acme_vault::params::user,
     $group              = $::acme_vault::params::group,
@@ -13,6 +19,7 @@ class acme_vault::common (
 ) inherits acme_vault::params {
 
     $common_bashrc_template = @(END)
+export PATH=$HOME:$PATH
 export VAULT_BIN=<%= @vault_bin %>
 export VAULT_TOKEN=<%= @vault_token %>
 export VAULT_ADDR=<%= @vault_addr %>
@@ -68,15 +75,6 @@ END
       month       => 7,
       environment => "MAILTO=${contact_email}",
     }
-
-    #		file { "$home_dir/.bashrc":
-    #			ensure  => present,
-    #			owner   => $user,
-    #      group   => $group,
-    #      mode    => "0600",
-    #      content => template("acme_vault/bashrc"),
-    #    }
-
 
 }
 

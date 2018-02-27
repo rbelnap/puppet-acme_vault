@@ -1,3 +1,12 @@
+# Configuration for deploying certs in vault to the filesystem
+#
+# This class handles taking a cert/key out of vault, and placing it in a
+# configured path on the filesystem.  It will also accept a restart command to
+# restart any appropriate services to take advantage of the new cert.
+#
+# It employs a script, check_cert.sh, to validate the cert in vault is
+# appropriate to replace the existing one
+
 class acme_vault::deploy(
     $user                  = $::acme_vault::common::user,
     $group                 = $::acme_vault::common::group,
@@ -32,7 +41,7 @@ class acme_vault::deploy(
   if $restart {
     $restart_suffix = "&& ${restart_command}"
   } else {
-    $restart_suffix = ""
+    $restart_suffix = ''
   }
 
   # go through each domain, setup cron, and ensure the destination dir exists

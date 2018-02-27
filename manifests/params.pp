@@ -1,3 +1,4 @@
+# params for both common, requestor, and deploy
 class acme_vault::params {
     # settings for acme user
     $user       = 'acme'
