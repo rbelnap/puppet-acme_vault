@@ -11,6 +11,7 @@
 <% } -%>
 --dns dns_lexicon \
 --dnssleep 600 \
+--domain "<%= $domain %>" \
 <% $domains.each |$d| { -%>
 --domain "<%= $d %>" \
 <% } -%>

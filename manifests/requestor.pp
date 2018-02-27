@@ -1,9 +1,10 @@
 class acme_vault::requestor (
-    $user               = $::acme_vault::params::user,
-    $group              = $::acme_vault::params::group,
-    $home_dir           = $::acme_vault::params::home_dir,
+    $user               = $::acme_vault::common::user,
+    $group              = $::acme_vault::common::group,
+    $home_dir           = $::acme_vault::common::home_dir,
+    $contact_email      = $::acme_vault::common::contact_email,
+    $domains            = $::acme_vault::common::domains,
 
-    $contact_email      = $::acme_vault::params::contact_email,
     $staging            = $::acme_vault::params::staging,
     $staging_url        = $::acme_vault::params::staging_url,
     $prod_url           = $::acme_vault::params::prod_url,
@@ -16,7 +17,6 @@ class acme_vault::requestor (
     $lexicon_username   = $::acme_vault::params::lexicon_username,
     $lexicon_token      = $::acme_vault::params::lexicon_token,
 
-    $domains            = $::acme_vault::params::domains,
 
 ) inherits acme_vault::params {
 
