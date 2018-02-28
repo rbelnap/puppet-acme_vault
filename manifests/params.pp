@@ -1,4 +1,4 @@
-# params for both common, requestor, and deploy
+# params for both common, request, and deploy
 class acme_vault::params {
     # settings for acme user
     $user       = 'acme'
@@ -9,7 +9,6 @@ class acme_vault::params {
     $staging     = true
     $staging_url = 'https://acme-staging-v02.api.letsencrypt.org/directory'
     $prod_url    = 'https://acme-v02.api.letsencrypt.org/directory'
-    #TODO configurue email
     $contact_email = ''
 
     $acme_revision = 'HEAD'

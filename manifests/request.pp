@@ -8,7 +8,7 @@
 # coordination to eventually reach the desired end state.  Since certificate
 # renewal has a large time window, this is acceptable.
 
-class acme_vault::requestor (
+class acme_vault::request (
     $user               = $::acme_vault::common::user,
     $group              = $::acme_vault::common::group,
     $home_dir           = $::acme_vault::common::home_dir,
@@ -32,7 +32,7 @@ class acme_vault::requestor (
 
     include acme_vault::common
 
-    $requestor_bashrc_template = @(END)
+    $request_bashrc_template = @(END)
 export TLDEXTRACT_CACHE=$HOME/.tld_set
 export PROVIDER=<%= @lexicon_provider %>
 export LEXICON_<%= @lexicon_provider.upcase %>_USERNAME=<%= @lexicon_username %>
@@ -46,9 +46,9 @@ END
     })
 
     # variables in bashrc
-    concat::fragment { 'requestor_bashrc':
+    concat::fragment { 'request_bashrc':
       target  => "${home_dir}/.bashrc",
-      content => inline_template($requestor_bashrc_template),
+      content => inline_template($request_bashrc_template),
       order   => '02',
     }
 
@@ -59,6 +59,24 @@ END
       provider => git,
       source   => 'https://github.com/Neilpang/acme.sh.git',
       revision => $acme_revision,
+    }
+
+    file { "${home_dir}/.acme.sh":
+      ensure => directory,
+      owner  => $user,
+      group  => $group,
+      mode   => '0700',
+    } ->
+    file { "${home_dir}/.acme.sh/account.conf":
+      ensure => present,
+      owner  => $user,
+      group  => $group,
+      mode   => '0600',
+    } ->
+    file_line { ' add email to acme conf':
+      path  => "${home_dir}/.acme.sh/account.conf",
+      line  => "ACCOUNT_EMAIL=${contact_email}",
+      match => '^ACCOUNT_EMAIL=.*$',
     }
 
     # create issue scripts
