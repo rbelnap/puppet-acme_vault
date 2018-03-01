@@ -273,7 +273,7 @@ and the list of domains are included.
 
 REQUIRED
 
-#### Parameters only for deplay: 
+#### Parameters only for deploy: 
 
 ##### `cert_destination_path`
 
@@ -291,7 +291,7 @@ Valid values: `true` `false`
 
 The command used restart any service after cert is deployed
 
-Default value: `''`
+Default value: `'echo restart!'`
 
  
 ## Limitations

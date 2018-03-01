@@ -4,28 +4,29 @@ class acme_vault::params {
     $user       = 'acme'
     $group      = 'apache'
     $home_dir   = '/home/acme_vault'
+    $contact_email = ''
+    $domains     = undef
+
+    # authentication
+    $vault_token = undef
+    $vault_addr  = undef
+    $vault_bin   = "${home_dir}/vault"
+
+    $vault_prefix   = '/secret/letsencrypt/'
 
     # whether to use the letsencrypt staging url, set those urls
     $staging     = false
     $staging_url = 'https://acme-staging-v02.api.letsencrypt.org/directory'
     $prod_url    = 'https://acme-v02.api.letsencrypt.org/directory'
-    $contact_email = ''
 
     $acme_revision = 'HEAD'
     $acme_repo_path = "${home_dir}/acme.sh"
     $acme_script    = "${acme_repo_path}/acme.sh"
-    $vault_prefix   = '/secret/letsencrypt/'
-    $domains     = ''
-
-    # authentication
-    $vault_token = ''
-    $vault_addr  = ''
-    $vault_bin   = "${home_dir}/vault"
 
     # lexicon 
-    $lexicon_provider   = ''
-    $lexicon_username   = ''
-    $lexicon_token      = ''
+    $lexicon_provider   = undef 
+    $lexicon_username   = undef 
+    $lexicon_token      = undef 
 
     # settings for deploy
 

@@ -5,8 +5,8 @@ class acme_vault::common (
     $user               = $::acme_vault::params::user,
     $group              = $::acme_vault::params::group,
     $home_dir           = $::acme_vault::params::home_dir,
-    $domains            = $::acme_vault::params::domains,
     $contact_email      = $::acme_vault::params::contact_email,
+    $domains            = $::acme_vault::params::domains,
 
     $vault_token        = $::acme_vault::params::vault_token,
     $vault_addr         = $::acme_vault::params::vault_addr,
