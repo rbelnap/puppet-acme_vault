@@ -1,12 +1,5 @@
 # Configuration for requesting a cert from letsencrypt, and storing it in vault.
 #
-# This class uses acme.sh, and pulls down the git repo for it.  It uses the
-# lexicon provider in acme.sh to do the dns updating for the dns-01 challenge.
-# It configures a cron job to periodically check if a cert needs renewal.
-# 
-# Note: it does not automatically trigger requesting certs, but relies on cron
-# coordination to eventually reach the desired end state.  Since certificate
-# renewal has a large time window, this is acceptable.
 
 class acme_vault::request (
     $user               = $::acme_vault::common::user,

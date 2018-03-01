@@ -70,12 +70,76 @@ This section is where you describe how to customize, configure, and do the fancy
 
 #### acme_vault::common
 
+This class needs to be included before acme_vault::request or
+acme_vault::deploy and contains configurations common to both.  The user,
+vault, vault vars, and cron mailto are needed for both request and deploy
+
+##### `user`
+
+user to be created to request/deploy certs 
+
+Default value: `acme_vault`
+
+##### `group`
+
+group that the user belongs to.  For deploy, this should probably be the webserver group 
+
+Default value: `acme_vault`
+
+##### `home_dir`
+
+home dir of the above user, where scripts and config will be stored.
+
+Default value: `/home/$user`
+
+##### `contact_email`
+
+contact email used for cert registration, also used as MAILTO variable for cron jobs
+
+Default value: `''`
+
+##### `domains`
+
+mapping of domains to be included in the cert.  The key is the "main" domain,
+and the value is the list of extra names to be requested.  Both the main domain
+and the list of domains are included. 
+
+REQUIRED
+
+#### `vault_token`
+
+Vault token for authenticating to vault.  This should have appropriate permissions applied in vault.  A demo script is provided 
+
+REQUIRED
+
+#### `vault_addr`
+
+Address of vault server
+
+REQUIRED
+
+#### `vault_bin`
+
+Path to the vault binary.
+
+Default value: `${home_dir}/vault"`
+
+#### `vault_prefix`
+
+The path within vault where the certificates will be stored and retrieved. 
+
+Default value: `/secret/letsencrypt/`
 
 #### acme_vault::request
 
+This class uses acme.sh, and pulls down the git repo for it.  It uses the
+lexicon provider in acme.sh to do the dns updating for the dns-01 challenge.
+It configures a cron job to periodically check if a cert needs renewal.
+
 Note: it does not automatically trigger requesting certs, but relies on cron
 coordination to eventually reach the desired end state.  Since certificate
-renewal has a large time window, this is acceptable.
+renewal has a large time window, this is acceptable.  Any urgent issue/renewals
+can be triggered by running the cron job manually as needed.
 
 #### Parameters inherited from common, but can be overriden:
 
@@ -171,6 +235,13 @@ token for lexicon user.
 REQUIRED
 
 ### acme_vault::deploy
+
+This class handles taking a cert/key out of vault, and placing it in a
+configured path on the filesystem.  It will also accept a restart command to
+restart any appropriate services to take advantage of the new cert.
+
+It employs a script, check_cert.sh, to validate the cert in vault exists, and
+is appropriate to replace the existing one
 
 #### Parameters inherited from common, but can be overriden:
 

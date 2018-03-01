@@ -1,8 +1,5 @@
 # Common configuration for acme_vault
 # 
-# This class needs to be included before acme_vault::request or
-# acme_vault::deploy and contains configurations common to both.  The user,
-# vault, vault vars, and cron mailto are needed for both request and deploy
 
 class acme_vault::common (
     $user               = $::acme_vault::params::user,
