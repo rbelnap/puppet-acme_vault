@@ -21,7 +21,7 @@ vault](https://www.vaultproject.io/) where they can be retrieved by any
 appropriate machine.  
 
 This module consists of a common class, a request class, and a deploy class.
-The request class is intented to be enabled on a single machine that will
+The request class is intended to be enabled on a single machine that will
 handle all the certificate request and validation.  The deploy class is then
 enabled on any machine that requires the requested certificates.
 
