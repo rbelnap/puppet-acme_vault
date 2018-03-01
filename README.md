@@ -108,7 +108,9 @@ REQUIRED
 
 #### `vault_token`
 
-Vault token for authenticating to vault.  This should have appropriate permissions applied in vault.  A demo script is provided 
+Vault token for authenticating to vault.  This should have appropriate
+permissions applied in vault.  A demo script is provided
+[here](vault_policy.sh)
 
 REQUIRED
 
