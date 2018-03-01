@@ -6,7 +6,7 @@ class acme_vault::params {
     $home_dir   = '/home/acme_vault'
 
     # whether to use the letsencrypt staging url, set those urls
-    $staging     = true
+    $staging     = false
     $staging_url = 'https://acme-staging-v02.api.letsencrypt.org/directory'
     $prod_url    = 'https://acme-v02.api.letsencrypt.org/directory'
     $contact_email = ''

@@ -6,7 +6,6 @@
 1. [Description](#description)
 2. [Setup - The basics of getting started with acme_vault](#setup)
     * [What acme_vault affects](#what-acme_vault-affects)
-    * [Setup requirements](#setup-requirements)
     * [Beginning with acme_vault](#beginning-with-acme_vault)
 3. [Usage - Configuration options and additional functionality](#usage)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
@@ -15,31 +14,45 @@
 
 ## Description
 
-Start with a one- or two-sentence summary of what the module does and/or what problem it solves. This is your 30-second elevator pitch for your module. Consider including OS/Puppet version it works with.       
+This module uses [acme.sh](https://github.com/Neilpang/acme.sh) to request
+letsencrypt certificates using the DNS-01 challenge.  Once valid certificates
+are recieved, they are stored in [Hashicorp
+vault](https://www.vaultproject.io/) where they can be retrieved by any
+appropriate machine.  
 
-You can give more descriptive information in a second paragraph. This paragraph should answer the questions: "What does this module *do*?" and "Why would I use it?" If your module has a range of functionality (installation, configuration, management, etc.), this is the time to mention it.
+This module consists of a common class, a request class, and a deploy class.
+The request class is intented to be enabled on a single machine that will
+handle all the certificate request and validation.  The deploy class is then
+enabled on any machine that requires the requested certificates.
 
 ## Setup
 
-### What acme_vault affects **OPTIONAL**
+### What acme_vault affects
 
-If it's obvious what your module touches, you can skip this section. For example, folks can probably figure out that your mysql_instance module affects their MySQL instances.
+This module will create a new system user that is used to request and deploy
+certificates.  It uses [lexicon](https://github.com/AnalogJ/lexicon) to make
+api requests for dns changes.  We use namecheap, so the required namecheap
+python library is also included.  Both are installed via pip.
 
-If there's more that they should know about, though, this is the place to mention:
-
-* Files, packages, services, or operations that the module will alter, impact, or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
-
-### Setup Requirements **OPTIONAL**
-
-If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here. 
-  
-If your most recent release breaks compatibility or requires particular steps for upgrading, you might want to include an additional "Upgrading" section here.
+This module also assumes a working installation of vault.
 
 ### Beginning with acme_vault  
 
-The very basic steps needed for a user to get the module up and running. This can include setup steps, if necessary, or it can be an example of the most basic use of the module.
+Just include the appropriate modules for the appropriate machines, and make
+sure the required values are provided via hiera or class.  Note: the common
+module must be included before either.  
+
+Typically this would involve a profile like:
+
+```puppet
+class profiles::acme_request {
+
+  include ::acme_vault::common
+  include ::acme_vault::request
+
+}
+
+```
 
 ## Usage
 
@@ -47,25 +60,172 @@ This section is where you describe how to customize, configure, and do the fancy
 
 ## Reference
 
-Users need a complete list of your module's classes, types, defined types providers, facts, and functions, along with the parameters for each. You can provide this list either via Puppet Strings code comments or as a complete list in the README Reference section.
+**Classes:**
 
-* If you are using Puppet Strings code comments, this Reference section should include Strings information so that your users know how to access your documentation.
+* [acme_vault::common](#acme_vaultcommon)
+* [acme_vault::request](#acme_vaultrequest)
+* [acme_vault::deploy](#acme_vaultdeploy)
 
-* If you are not using Puppet Strings, include a list of all of your classes, defined types, and so on, along with their parameters. Each element in this listing should include:
+### Classes
 
-  * The data type, if applicable.
-  * A description of what the element does.
-  * Valid values, if the data type doesn't make it obvious.
-  * Default value, if any.
+#### acme_vault::common
 
+
+#### acme_vault::request
+
+Note: it does not automatically trigger requesting certs, but relies on cron
+coordination to eventually reach the desired end state.  Since certificate
+renewal has a large time window, this is acceptable.
+
+#### Parameters inherited from common, but can be overriden:
+
+##### `user`
+
+user to be created to request/deploy certs 
+
+Default value: `acme_vault`
+
+##### `group`
+
+group that the user belongs to.  For deploy, this should probably be the webserver group 
+
+Default value: `acme_vault`
+
+##### `home_dir`
+
+home dir of the above user, where scripts and config will be stored.
+
+Default value: `/home/$user`
+
+##### `contact_email`
+
+contact email used for cert registration, also used as MAILTO variable for cron jobs
+
+Default value: `''`
+
+##### `domains`
+
+mapping of domains to be included in the cert.  The key is the "main" domain,
+and the value is the list of extra names to be requested.  Both the main domain
+and the list of domains are included. 
+
+REQUIRED
+
+
+#### Parameters only for request:
+
+#### `staging`
+
+whether to use the acme staging endpoint
+
+Valid values: `true`, `false`
+
+Default value: `false`
+
+#### `staging_url`
+
+url to acme staging endpoint
+
+Default value: `https://acme-staging-v02.api.letsencrypt.org/directory`
+
+#### `prod_url`
+
+url to the acme prod endpoint
+
+Default value: `https://acme-v02.api.letsencrypt.org/directory`
+
+#### `acme_revision`
+
+git revision/tag to be used to checkout acme.sh repository.  
+
+Default value: `HEAD`
+
+#### `acme_repo_path`
+
+where the repo should be checked out.  
+
+Default value: `$home_dir/acme.sh`
+
+#### `acme_script`
+
+path the the acme.sh script itself  
+
+Default value: `$acme_repo_path/acme.sh`
+
+#### `lexicon_provider`
+
+provider for lexicon to use for dns-01 challanges.  
+
+REQUIRED
+
+#### `lexicon_username`
+
+username for lexicon dns.  
+
+REQUIRED
+
+#### `lexicon_token`
+
+token for lexicon user.  
+
+REQUIRED
+
+### acme_vault::deploy
+
+#### Parameters inherited from common, but can be overriden:
+
+##### `user`
+
+user to be created to request/deploy certs 
+
+Default value: `acme_vault`
+
+##### `group`
+
+group that the user belongs to.  For deploy, this should probably be the webserver group 
+
+Default value: `acme_vault`
+
+##### `home_dir`
+
+home dir of the above user, where scripts and config will be stored.
+
+Default value: `/home/$user`
+
+##### `domains`
+
+mapping of domains to be included in the cert.  The key is the "main" domain,
+and the value is the list of extra names to be requested.  Both the main domain
+and the list of domains are included. 
+
+REQUIRED
+
+#### Parameters only for deplay: 
+
+##### `cert_destination_path`
+
+where the cert should be deployed to.  cert will end up in $cert_destination_path/$domain/.  
+
+Default value: `/etc/acme-vault`
+
+##### `restart`
+
+indicates if cron should include a restart after cert is deployed
+
+Valid values: `true` `false`
+
+##### `restart_command`
+
+The command used restart any service after cert is deployed
+
+Default value: `''`
+
+ 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc. If there are Known Issues, you might want to include them under their own heading here.
+Has only been tested on Centos 7
 
 ## Development
 
-Since your module is awesome, other users will want to play with it. Let them know what the ground rules for contributing are.
+Contributions are welcome!
 
-## Release Notes/Contributors/Etc. **Optional**
-
-If you aren't using changelog, put your release notes here (though you should consider using changelog). You can also add any additional sections you feel are necessary or important to include here. Please use the `## ` header. 
