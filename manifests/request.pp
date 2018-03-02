@@ -68,7 +68,7 @@ END
     } ->
     file_line { ' add email to acme conf':
       path  => "${home_dir}/.acme.sh/account.conf",
-      line  => "ACCOUNT_EMAIL=${contact_email}",
+      line  => "ACCOUNT_EMAIL='${contact_email}'",
       match => '^ACCOUNT_EMAIL=.*$',
     }
 
