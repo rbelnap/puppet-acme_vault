@@ -70,14 +70,18 @@ END
       command     => '/bin/true',
       user        => $user,
       month       => 7,
+      hour        => 1,
+      minute      => 29,
       environment => "MAILTO=${contact_email}",
     }
 
     # renew vault token
     cron { 'renew vault token':
-      command => "$vault_bin token-renew > /dev/null",
+      command => ". \$HOME/.bashrc && $vault_bin token-renew > /dev/null",
       user    => $user,
       weekday => 1,
+      hour    => 10,
+      minute  => 17,
     }
 
 }

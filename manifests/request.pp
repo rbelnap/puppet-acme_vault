@@ -94,6 +94,8 @@ END
         command => "${home_dir}/${domain}.sh",
         user    => $user,
         weekday => 1,
+        hour    => 11,
+        minute  => 28,
       }
     }
 

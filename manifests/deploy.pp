@@ -44,6 +44,8 @@ class acme_vault::deploy(
       command => "${home_dir}/check_cert.sh ${domain} ${cert_destination_path} ${restart_suffix}",
       user    => $user,
       weekday => 2,
+      hour    => 11,
+      minute  => 17,
     }
 
     file {"${cert_destination_path}/${domain}":
