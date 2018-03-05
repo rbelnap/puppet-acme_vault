@@ -73,5 +73,12 @@ END
       environment => "MAILTO=${contact_email}",
     }
 
+    # renew vault token
+    cron { 'renew vault token':
+      command => "$vault_bin token-renew > /dev/null",
+      user    => $user,
+      weekday => 1,
+    }
+
 }
 

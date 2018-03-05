@@ -18,8 +18,18 @@ path "secret/dns_api/token" {
   capabilities = ["read"]
 }
 '
-vault write sys/policy/cert_read policy=@<(echo $cert_read)
-vault write sys/policy/cert_write policy=@<(echo $cert_write)
+
+# the key here changed from "rules" to "policy" in v0.9, this is a basic check
+
+if vault --version | grep -q 'v0.8'
+then
+    K=rules
+else
+    K=policy
+fi
+
+vault write sys/policy/cert_read $K=@<(echo $cert_read)
+vault write sys/policy/cert_write $K=@<(echo $cert_write)
 
 # create periodic tokens:
 # these tokens have a period of 20 days, they will expire if not renewed.
