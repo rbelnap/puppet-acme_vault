@@ -28,8 +28,8 @@ class acme_vault::request (
     $request_bashrc_template = @(END)
 export TLDEXTRACT_CACHE=$HOME/.tld_set
 export PROVIDER=<%= @lexicon_provider %>
-export LEXICON_<%= @lexicon_provider.upcase %>_USERNAME=<%= @lexicon_username %>
-export LEXICON_<%= @lexicon_provider.upcase %>_TOKEN=<%= @lexicon_token %>
+export LEXICON_<%= @lexicon_provider.upcase %>_AUTH_USERNAME=<%= @lexicon_username %>
+export LEXICON_<%= @lexicon_provider.upcase %>_AUTH_TOKEN=<%= @lexicon_token %>
 END
 
     # install lexicon
